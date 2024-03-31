@@ -2,7 +2,9 @@
 {
     public class Account
     {
-        public Guid Guid { get; set; }
+        public int Id { get; set; }
+        public Guid AcountGuid { get; set; }
+        public string Name { get; set; }
         public double Amount { get; set; }
         // Other properties like Date, Description, etc.
     }

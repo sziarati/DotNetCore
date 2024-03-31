@@ -1,5 +1,8 @@
+using Core.Interfaces;
 using Infra;
+using Infra.Accounts.Repository;
 using Infra.Interceptors;
+using Infra.Personels.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +21,8 @@ builder.Services.AddDbContext<appDbContext>(
         option => option.UseSqlServer(builder.Configuration["ConnectionStrings:default"])
                         .AddInterceptors(new mySaveChangesInterceptor())
     );
+builder.Services.AddScoped<IPersonelRepository, PersonelRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 var app = builder.Build();
 

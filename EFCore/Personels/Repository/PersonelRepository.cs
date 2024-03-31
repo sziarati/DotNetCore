@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Personels.Repository
 {
@@ -34,8 +35,10 @@ namespace Infra.Personels.Repository
         {
             var personFounded = _context.Personel.FirstOrDefault(p => p.Id == person.Id);
 
-            if (personFounded != null)
-                _context.Personel.Remove(personFounded);
+            if (personFounded == null)
+                return false;
+
+            _context.Entry(personFounded).State = EntityState.Modified;
 
             var result = await _context.SaveChangesAsync();
             return result > 0 ? true : false;
