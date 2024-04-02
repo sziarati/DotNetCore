@@ -14,7 +14,8 @@ namespace Infra.Accounts.Repository
         }
         public async Task<decimal> Add(Account account)
         {
-            account.AcountGuid = Guid.NewGuid();
+            account.Created = DateTime.Now;
+            //account.AcountGuid = Guid.NewGuid();
             _context.Accounts.Add(account);
             var result = await _context.SaveChangesAsync();
             return result > 0 ? account.Id : 0;
@@ -26,7 +27,7 @@ namespace Infra.Accounts.Repository
             if (accountFounded == null)
                 return false;
 
-            accountFounded.Amount += account.Amount;
+            accountFounded.Balance += account.Balance;
             _context.Entry(accountFounded).State = EntityState.Modified;
 
             var result = await _context.SaveChangesAsync();
@@ -43,7 +44,7 @@ namespace Infra.Accounts.Repository
             return result > 0 ? true : false;
         }
 
-        public async Task<bool> MoveMoney(Tuple<Guid, Guid> account, double amount)
+        public async Task<bool> MoveMoney(Tuple<Guid, Guid> account, double balance)
         {
             const int maxRetryCount = 3; // Maximum number of retry attempts
             int retryCounter = 0;
@@ -57,7 +58,7 @@ namespace Infra.Accounts.Repository
                     var fromAccount = new Account
                     {
                         AcountGuid = account.Item1,
-                        Amount = -amount,
+                        Balance = -balance,
                     };
                     var fromAccountResult = await Update(fromAccount);
                     if (!fromAccountResult)
@@ -72,7 +73,7 @@ namespace Infra.Accounts.Repository
                     var toAccount = new Account
                     {
                         AcountGuid = account.Item2,
-                        Amount = amount
+                        Balance = balance
                     };
                     var toAccountResult = await Update(toAccount);
                     if (!toAccountResult)
@@ -99,7 +100,7 @@ namespace Infra.Accounts.Repository
                     var toAccount = new Account
                     {
                         AcountGuid = account.Item2,
-                        Amount = amount
+                        Balance = balance
                     };
                     var toAccountResult = await Update(toAccount);
                     if (!toAccountResult)

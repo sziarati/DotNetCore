@@ -7,6 +7,6 @@ namespace Core.Interfaces
         public Task<decimal> Add(Account account);
         public Task<bool> Update(Account account);
         public Task<bool> Delete(int Id);
-        public Task<bool> MoveMoney(Tuple<Guid, Guid> account, double amount);
+        public Task<bool> MoveMoney(Tuple<Guid, Guid> account, double balance);
     }
 }

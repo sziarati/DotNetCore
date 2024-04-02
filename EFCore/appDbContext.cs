@@ -10,15 +10,19 @@ namespace Infra
         public DbSet<Personel> Personel { get; set; }
         public DbSet<Address> Address { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<SavingAccount> SavingAccounts { get; set; }
+        public DbSet<CheckingAccount> CheckingAccounts { get; set; }
 
         public appDbContext(DbContextOptions options):base(options)
         {
 
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        {        
+
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(PersonelMap)));
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);            
+
         }
 
 

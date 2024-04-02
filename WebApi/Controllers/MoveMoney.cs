@@ -1,9 +1,9 @@
 ﻿namespace WebApi.Controllers
 {
-    public class MoveMoney
+    public class WithdrawDTO
     {
         public Guid FromAccount { get; set; }
         public Guid ToAccount { get; set; }
-        public double Amount { get; set; }
+        public double Balance { get; set; }
     }
 }

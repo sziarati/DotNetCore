@@ -17,9 +17,22 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<decimal> Create(Account account )
+        public async Task<decimal> Create([FromHeader] AccountType type, double balance )
         {
-            return await _AccountRepository.Add(account);
+            Core.Entities.Account accountToAdd = type switch
+            {
+                AccountType.CHECKING_ACCOUNT => new CheckingAccount
+                {
+                    Balance = balance,                    
+                },
+
+                AccountType.SAVINGS_ACCOUNT => new SavingAccount
+                {
+                    Balance = balance,
+                }
+            };
+            
+            return await _AccountRepository.Add(accountToAdd);
         }
 
         [HttpDelete]
@@ -30,11 +43,11 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("MoveMoney")]
-        public async Task<bool> MoveMoney(MoveMoney moveMoney)
+        [Route("Withdraw")]
+        public async Task<bool> Withdraw(WithdrawDTO input)
         {
-            var accounts = new Tuple<Guid,Guid>(moveMoney.FromAccount, moveMoney.ToAccount);
-            return await _AccountRepository.MoveMoney(accounts, moveMoney.Amount);
+            var accounts = new Tuple<Guid,Guid>(input.FromAccount, input.ToAccount);
+            return await _AccountRepository.MoveMoney(accounts, input.Balance);
         }
-    }
+    }    
 }

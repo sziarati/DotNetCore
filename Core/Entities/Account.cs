@@ -3,9 +3,8 @@
     public class Account
     {
         public int Id { get; set; }
-        public Guid AcountGuid { get; set; }
-        public string Name { get; set; }
-        public double Amount { get; set; }
-        // Other properties like Date, Description, etc.
+        public Guid AcountGuid { get; set; }        
+        public double Balance { get; set; }
+        public DateTime Created { get; set; }
     }
 }
