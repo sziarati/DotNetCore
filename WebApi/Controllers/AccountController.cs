@@ -1,3 +1,4 @@
+using Core.Dtos;
 using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<decimal> Create([FromHeader] AccountType type, double balance )
+        public async Task<decimal> Create([FromHeader] AccountType type, [FromHeader]double balance )
         {
             Core.Entities.Account accountToAdd = type switch
             {
@@ -49,6 +50,13 @@ namespace WebApi.Controllers
         {
             var accounts = new Tuple<Guid,Guid>(input.FromAccount, input.ToAccount);
             return await _AccountRepository.MoveMoney(accounts, input.Balance);
+        }
+
+        [HttpGet]
+        [Route("GetAccountHistory")]
+        public async Task<List<AccountInfo>> GetAccountHistory(AccountHistoryDTO input)
+        {
+            return await _AccountRepository.GetHistory(input.AccountGuid, input.ValidFrom, input.ValidTo);
         }
     }    
 }

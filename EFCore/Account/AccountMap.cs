@@ -8,7 +8,21 @@ namespace Infra.Personels
     {
         public void Configure(EntityTypeBuilder<Account> builder)
         {
-            builder.ToTable("Account");
+
+            builder.ToTable("Account", t=>t.IsTemporal(
+                x =>
+                {
+                    x.HasPeriodStart("ValidFrom");
+                    x.HasPeriodEnd("ValidTo");
+                    x.UseHistoryTable("AccountHistory");                   
+                }));
+
+            builder.Property<DateTime>("ValidFrom")
+            .HasColumnType("datetime2");
+
+            builder.Property<DateTime>("ValidTo")
+                .HasColumnType("datetime2");
+
             builder.HasKey(p => p.Id);
             builder.Property(p => p.Id)
                 .ValueGeneratedOnAdd();

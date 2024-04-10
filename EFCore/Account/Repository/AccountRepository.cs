@@ -1,10 +1,11 @@
-﻿using Core.Entities;
+﻿using Core.Dtos;
+using Core.Entities;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Accounts.Repository
 {
-    public class AccountRepository : IAccountRepository
+    public partial class AccountRepository : IAccountRepository
     {
         private readonly string MoveMoneySavepointName = "MoveMoneySavepoint";
         private readonly appDbContext _context;
@@ -117,6 +118,21 @@ namespace Infra.Accounts.Repository
             }
 
             return true;
+        }
+        public async Task<List<AccountInfo>> GetHistory(Guid accountGuid, DateTime validFrom, DateTime validTo)
+        {
+            var accountHistory = await _context.Accounts
+                .TemporalAll()
+                .Where(account => account.AcountGuid == accountGuid)
+                .OrderBy(account => account.Created)
+                .Select(account => new AccountInfo
+                                            (account.AcountGuid,
+                                             account.Balance,
+                                             EF.Property<DateTime>(account, "ValidFrom"),
+                                             EF.Property<DateTime>(account, "ValidTo")))
+                .ToListAsync();
+
+            return accountHistory;
         }
     }
 }
