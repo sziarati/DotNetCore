@@ -1,3 +1,3 @@
 ﻿namespace WebApi.Dtos;
 
-public record AccountHistoryDTO(Guid AccountGuid, DateTime ValidFrom, DateTime ValidTo);
+public record AccountHistoryDto(Guid AccountGuid, DateTime ValidFrom, DateTime ValidTo);

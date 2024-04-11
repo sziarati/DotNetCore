@@ -10,53 +10,42 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly IAccountRepository _AccountRepository;
+        private readonly IAccountRepository _accountRepository;
 
         public AccountController(IAccountRepository accountRepository)
         {
-            _AccountRepository = accountRepository;
+            _accountRepository = accountRepository;
         }
 
-        [HttpPost]
-        [Route("Create")]
-        public async Task<decimal> Create([FromHeader] AccountType type, [FromHeader]double balance )
+        [HttpPost("Create")]    
+        public async Task<ActionResult<decimal>> CreateAsync(AccountDto accountInfo)
         {
-            Core.Entities.Account accountToAdd = type switch
-            {
-                AccountType.CHECKING_ACCOUNT => new CheckingAccount
-                {
-                    Balance = balance,                    
-                },
-
-                AccountType.SAVINGS_ACCOUNT => new SavingAccount
-                {
-                    Balance = balance,
-                }
-            };
-            
-            return await _AccountRepository.Add(accountToAdd);
+            var accountToAdd = AccountFactory.Create(accountInfo.Type, accountInfo.Balance);
+            var addResult = await _accountRepository.Add(accountToAdd);
+            return addResult > 0 ? Ok(addResult) : BadRequest("Creation failed.");
         }
 
-        [HttpDelete]
-        [Route("Delete")]
-        public async Task<bool> Delete(int accountId)
+        [HttpDelete("Delete/{accountId}")]
+        public async Task<IActionResult> DeleteAsync(int accountId)
         {
-            return await _AccountRepository.Delete(accountId);
+            var deleteResult = await _accountRepository.Delete(accountId);
+            return deleteResult ? Ok() : NotFound("Account not found.");
         }
 
-        [HttpPost]
-        [Route("Withdraw")]
-        public async Task<bool> Withdraw(WithdrawDTO input)
+        [HttpPost("Withdraw")]
+        public async Task<IActionResult> WithdrawAsync(WithdrawDto input)
         {
-            var accounts = new Tuple<Guid,Guid>(input.FromAccount, input.ToAccount);
-            return await _AccountRepository.MoveMoney(accounts, input.Balance);
+            var accounts = Tuple.Create(input.FromAccount, input.ToAccount);
+
+            var moveMoneyResult = await _accountRepository.MoveMoney(accounts, input.Balance);
+            return moveMoneyResult? Ok() : BadRequest();
         }
 
-        [HttpGet]
-        [Route("GetAccountHistory")]
-        public async Task<List<AccountInfo>> GetAccountHistory(AccountHistoryDTO input)
+        [HttpGet("History")]
+        public async Task<ActionResult<List<AccountInfo>>> GetAccountHistoryAsync(AccountHistoryDto input)
         {
-            return await _AccountRepository.GetHistory(input.AccountGuid, input.ValidFrom, input.ValidTo);
+            var historyResult = await _accountRepository.GetHistory(input.AccountGuid, input.ValidFrom, input.ValidTo);
+            return Ok(historyResult);
         }
     }    
 }
