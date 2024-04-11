@@ -16,9 +16,8 @@ namespace WebApi.Controllers
             _personelRepository = personelRepository;
         }
 
-        [HttpPost]
-        [Route("Create")]
-        public async Task<int> Create(Personel personel)
+        [HttpPost("Create")]
+        public async Task<ActionResult<int>> CreateAsync(CreatePersonelDto personel)
         {
             var person = new Entities.Personel()
             {
@@ -29,19 +28,18 @@ namespace WebApi.Controllers
             };
 
             var result = await _personelRepository.Add(person);
-            return result > 0 ? person.Id : 0;
+            return result > 0 ? Ok(result) : BadRequest("Creation failed.");
         }
 
-        [HttpDelete]
-        [Route("Delete")]
-        public async Task<bool> Delete(int personelId)
+        [HttpDelete("Delete/{personelId}")]
+        public async Task<IActionResult> DeleteAsync(int personelId)
         {
-            return await _personelRepository.Delete(personelId);
+            var deleteResult = await _personelRepository.Delete(personelId);
+            return deleteResult ? Ok() : NotFound("Person Not Found.");
         }
 
-        [HttpPut]
-        [Route("Update")]
-        public async Task<bool> Update(Personel person)
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateAsync(UpdatePersonelDto person)
         {
             var userPersonel = new Entities.Personel
             {
@@ -53,7 +51,8 @@ namespace WebApi.Controllers
                 IsArchived = false
             };
 
-            return await _personelRepository.Update(userPersonel);
+            var updateResult = await _personelRepository.Update(userPersonel);
+            return updateResult ? Ok(): NotFound("Person Not Found.");
         }
     }
 }
