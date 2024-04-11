@@ -1,4 +1,6 @@
 using Core.Interfaces;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infra;
 using Infra.Accounts.Repository;
 using Infra.Interceptors;
@@ -16,7 +18,8 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining(typeof(Program)));
 builder.Services.AddDbContext<appDbContext>(
         option => option.UseSqlServer(builder.Configuration["ConnectionStrings:default"])
                         .AddInterceptors(new mySaveChangesInterceptor())

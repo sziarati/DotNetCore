@@ -9,7 +9,8 @@ namespace WebApi.Validators
         {
             RuleFor(model => model.FromAccount)
                 .NotEmpty()
-                .NotNull();
+                .NotNull()
+                .WithMessage("the field FromAccount is required.");
 
             RuleFor(model => model.ToAccount)
                 .NotEmpty()
