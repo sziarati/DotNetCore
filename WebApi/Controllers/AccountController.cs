@@ -1,50 +1,41 @@
 using Core.Dtos;
-using Core.Entities;
-using Core.Interfaces;
+using Core.Features.Accounts.Commands;
+using Core.Features.Accounts.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Dtos;
 
 namespace WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController(IMediator mediator) : ControllerBase
     {
-        private readonly IAccountRepository _accountRepository;
-
-        public AccountController(IAccountRepository accountRepository)
-        {
-            _accountRepository = accountRepository;
-        }
-
         [HttpPost("Create")]    
-        public async Task<ActionResult<decimal>> CreateAsync(AccountDto accountInfo)
+        public async Task<ActionResult<Guid>> CreateAsync(CreateAccountCommand input)
         {
-            var accountToAdd = AccountFactory.Create(accountInfo.Type, accountInfo.Balance);
-            var addResult = await _accountRepository.Add(accountToAdd);
-            return addResult > 0 ? Ok(addResult) : BadRequest("Creation failed.");
+            var addResult = await mediator.Send(input);
+            return addResult != Guid.Empty ? Ok(addResult) : BadRequest("Creation failed.");
         }
 
         [HttpDelete("Delete/{accountId}")]
-        public async Task<IActionResult> DeleteAsync(int accountId)
+        public async Task<IActionResult> DeleteAsync(DeleteAccountCommand input)
         {
-            var deleteResult = await _accountRepository.Delete(accountId);
+            var deleteResult = await mediator.Send(input);
             return deleteResult ? Ok() : NotFound("Account not found.");
         }
 
         [HttpPost("Withdraw")]
-        public async Task<IActionResult> WithdrawAsync(WithdrawDto input)
+        public async Task<IActionResult> WithdrawAsync(WithdrawCommand input)
         {
-            var accounts = Tuple.Create(input.FromAccount, input.ToAccount);
 
-            var moveMoneyResult = await _accountRepository.MoveMoney(accounts, input.Balance);
-            return moveMoneyResult? Ok() : BadRequest();
+            var moveMoneyResult = await mediator.Send(input);
+            return moveMoneyResult ? Ok() : BadRequest();
         }
 
         [HttpGet("History")]
-        public async Task<ActionResult<List<AccountInfo>>> GetAccountHistoryAsync(AccountHistoryDto input)
+        public async Task<ActionResult<List<AccountInfo>>> GetAccountHistoryAsync(GetHistoryQuery input)
         {
-            var historyResult = await _accountRepository.GetHistory(input.AccountGuid, input.ValidFrom, input.ValidTo);
+            var historyResult = await mediator.Send(input);
             return Ok(historyResult);
         }
     }    

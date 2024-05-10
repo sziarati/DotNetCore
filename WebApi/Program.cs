@@ -1,12 +1,15 @@
+using Application;
+using Application.Dependency;
 using Core.Interfaces;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infra;
 using Infra.Accounts.Repository;
 using Infra.Interceptors;
-using Infra.Personels.Repository;
+using Infra.Users.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using WebApi.Dependency;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +27,12 @@ builder.Services.AddDbContext<appDbContext>(
         option => option.UseSqlServer(builder.Configuration["ConnectionStrings:default"])
                         .AddInterceptors(new mySaveChangesInterceptor())
     );
-builder.Services.AddScoped<IPersonelRepository, PersonelRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+
+builder.Services
+    .RegisterWebApi()
+    .RegisterApplication();
 
 var app = builder.Build();
 
