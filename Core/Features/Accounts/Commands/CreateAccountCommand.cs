@@ -3,8 +3,6 @@ using MediatR;
 
 namespace Core.Features.Accounts.Commands;
 
-public class CreateAccountCommand : IRequest<Guid>
-{
-    public double Balance { get; set; }
-    public AccountType Type { get; set; }
-}
+public record CreateAccountCommand(double Balance, int UserId, AccountType Type) : IRequest<Guid>;
+
+

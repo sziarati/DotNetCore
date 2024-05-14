@@ -28,7 +28,7 @@ namespace Infra.Users
             builder.Property(p => p.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(p => p.AcountGuid)
+            builder.Property(p => p.AccountGuid)
                 .HasDefaultValueSql("NEWID()");
 
             //TPH

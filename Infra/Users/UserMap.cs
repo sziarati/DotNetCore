@@ -13,6 +13,9 @@ namespace Infra.Users
             builder.Property(p => p.Id)
                 .ValueGeneratedOnAdd();
 
+            builder.OwnsOne(p => p.nationalCode);
+            builder.OwnsOne(p => p.Address);
+
         }
     }
 }

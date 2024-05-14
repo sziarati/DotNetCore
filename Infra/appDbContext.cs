@@ -8,7 +8,6 @@ namespace Infra
     public class appDbContext :DbContext
     {
         public DbSet<User> Users { get; set; }
-        public DbSet<Address> Address { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<SavingAccount> SavingAccounts { get; set; }
         public DbSet<CheckingAccount> CheckingAccounts { get; set; }

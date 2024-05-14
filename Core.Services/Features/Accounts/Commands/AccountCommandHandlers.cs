@@ -1,8 +1,8 @@
 ﻿using Core.Features.Accounts.Commands;
-using Core.Interfaces;
+using Core.Features.Accounts.Interfaces;
 using MediatR;
 
-namespace Application.Features.Account.Commands;
+namespace Application.Features.Accounts.Commands;
 
 public class AccountCommandHandlers(IAccountCommandServices accountCommandServices) :
     IRequestHandler<CreateAccountCommand, Guid>,

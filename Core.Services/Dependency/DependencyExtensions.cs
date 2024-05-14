@@ -1,5 +1,4 @@
-﻿using Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Application.Dependency;

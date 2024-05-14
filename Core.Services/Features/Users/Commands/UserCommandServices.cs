@@ -1,6 +1,6 @@
 ﻿using Core.Entities;
 using Core.Features.Users.Commands;
-using Core.Interfaces;
+using Core.Features.Users.Interfaces;
 
 namespace Application.Features.Users.Commands;
 
@@ -13,7 +13,9 @@ public class UserCommandServices(IUserRepository userRepository) : IUserCommandS
             CreateDate = DateTime.Now,
             Name = request.Name,
             Family = request.Family,
+            nationalCode = new NationalCode { Code = request.NationalCode },
             Email = request.Email,
+            MobileNumber = request.MobileNumber,
             IsArchived = false
         };
 
@@ -33,7 +35,9 @@ public class UserCommandServices(IUserRepository userRepository) : IUserCommandS
             EditDate = DateTime.Now,
             Name = request.Name,
             Family = request.Family,
+            nationalCode = new NationalCode { Code = request.NationalCode },
             Email = request.Email,
+            MobileNumber = request.MobileNumber,
             IsArchived = false
         };
 

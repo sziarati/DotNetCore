@@ -1,9 +1,9 @@
 ﻿using Core.Dtos;
+using Core.Features.Accounts.Interfaces;
 using Core.Features.Accounts.Queries;
-using Core.Interfaces;
 using MediatR;
 
-namespace Application.Features.Account.Queries;
+namespace Application.Features.Accounts.Queries;
 
 public class AccountQueryHandlers(IAccountQueryServices accountQueryServices) :
     IRequestHandler<GetHistoryQuery, List<AccountInfo>>

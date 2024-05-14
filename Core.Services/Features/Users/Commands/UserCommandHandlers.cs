@@ -1,5 +1,5 @@
 ﻿using Core.Features.Users.Commands;
-using Core.Interfaces;
+using Core.Features.Users.Interfaces;
 using MediatR;
 
 namespace Core.Services.Features.Users.Commands;

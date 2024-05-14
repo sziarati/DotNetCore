@@ -1,6 +1,8 @@
 ﻿using Core.Dtos;
 using Core.Entities;
-using Core.Interfaces;
+using Core.Features.Accounts.Interfaces;
+using Core.Features.Notification;
+using Infra.Notification;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Accounts.Repository
@@ -16,14 +18,14 @@ namespace Infra.Accounts.Repository
         public async Task<Guid> Add(Account account)
         {
             account.Created = DateTime.Now;
-            account.AcountGuid = Guid.NewGuid();
+            account.AccountGuid = Guid.NewGuid();
             _context.Accounts.Add(account);
             var result = await _context.SaveChangesAsync();
-            return result > 0 ? account.AcountGuid : Guid.Empty;
+            return result > 0 ? account.AccountGuid : Guid.Empty;
         }
         public async Task<bool> Update(Account account)
         {
-            var accountFounded = _context.Accounts.FirstOrDefault(p => p.AcountGuid == account.AcountGuid);
+            var accountFounded = _context.Accounts.FirstOrDefault(p => p.AccountGuid == account.AccountGuid);
 
             if (accountFounded == null)
                 return false;
@@ -50,17 +52,24 @@ namespace Infra.Accounts.Repository
             const int maxRetryCount = 3; // Maximum number of retry attempts
             int retryCounter = 0;
 
+            var fromAccount = new Account
+            {
+                AccountGuid = account.Item1,
+                Balance = balance
+            };
+
+            var toAccount = new Account
+            {
+                AccountGuid = account.Item2,
+                Balance = balance
+            };
+
             var transaction = await _context.Database.BeginTransactionAsync();
             while (retryCounter < maxRetryCount)
             {
                 try
                 {
                     // Perform an initial banking transaction
-                    var fromAccount = new Account
-                    {
-                        AcountGuid = account.Item1,
-                        Balance = -balance,
-                    };
                     var fromAccountResult = await Update(fromAccount);
                     if (!fromAccountResult)
                     {
@@ -71,11 +80,6 @@ namespace Infra.Accounts.Repository
                     await transaction.CreateSavepointAsync(MoveMoneySavepointName);
 
                     // Perform another transaction
-                    var toAccount = new Account
-                    {
-                        AcountGuid = account.Item2,
-                        Balance = balance
-                    };
                     var toAccountResult = await Update(toAccount);
                     if (!toAccountResult)
                     {
@@ -98,11 +102,7 @@ namespace Infra.Accounts.Repository
 
                     await transaction.RollbackToSavepointAsync(MoveMoneySavepointName);
                     // Perform another transaction
-                    var toAccount = new Account
-                    {
-                        AcountGuid = account.Item2,
-                        Balance = balance
-                    };
+                    
                     var toAccountResult = await Update(toAccount);
                     if (!toAccountResult)
                     {
@@ -115,24 +115,8 @@ namespace Infra.Accounts.Repository
 
                 // If transaction is successful, break out of the loop
                 break;
-            }
-
+            }            
             return true;
-        }
-        public async Task<List<AccountInfo>> GetHistory(Guid accountGuid, DateTime validFrom, DateTime validTo)
-        {
-            var accountHistory = await _context.Accounts
-                .TemporalAll()
-                .Where(account => account.AcountGuid == accountGuid)
-                .OrderBy(account => account.Created)
-                .Select(account => new AccountInfo
-                                            (account.AcountGuid,
-                                             account.Balance,
-                                             EF.Property<DateTime>(account, "ValidFrom"),
-                                             EF.Property<DateTime>(account, "ValidTo")))
-                .ToListAsync();
-
-            return accountHistory;
         }
     }
 }

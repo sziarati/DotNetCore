@@ -1,14 +1,14 @@
 ﻿using Core.Entities;
 using Core.Features.Accounts.Commands;
-using Core.Interfaces;
+using Core.Features.Accounts.Interfaces;
 
-namespace Application.Features.Account.Commands;
+namespace Application.Features.Accounts.Commands;
 
 public class AccountCommandServices(IAccountRepository accountRepository) : IAccountCommandServices
 {
     public async Task<Guid> CreateAccount(CreateAccountCommand request, CancellationToken cancellationToken)
     {
-        var accountToAdd = AccountFactory.Create(request.Type, request.Balance);
+        var accountToAdd = AccountFactory.Create(request.Type, request.Balance, request.UserId);
         return await accountRepository.Add(accountToAdd);
     }
     public async Task<bool> DeleteAccount(DeleteAccountCommand request, CancellationToken cancellationToken)
@@ -17,7 +17,7 @@ public class AccountCommandServices(IAccountRepository accountRepository) : IAcc
     }
     public async Task<bool> WithDraw(WithdrawCommand request, CancellationToken cancellationToken)
     {
-        var accounts = Tuple.Create(request.FromAccount, request.ToAccount);
-        return await accountRepository.MoveMoney(accounts, request.Balance);
+        var accounts = Tuple.Create(request.FromAccount, request.ToAccount);        
+        return await accountRepository.MoveMoney(accounts, request.Balance);        
     }
 }

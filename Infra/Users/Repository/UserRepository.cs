@@ -1,5 +1,5 @@
 ﻿using Core.Entities;
-using Core.Interfaces;
+using Core.Features.Users.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Users.Repository
