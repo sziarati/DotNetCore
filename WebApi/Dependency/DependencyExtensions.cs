@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Core.Features.Accounts.Interfaces;
 using Core.Features.Users.Interfaces;
 using Microsoft.OpenApi.Models;
+using Core.Features.Notification;
+using Infra.Notification;
 
 namespace WebApi.Dependency;
 
@@ -36,6 +38,8 @@ public static class DependencyExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IAccountReader, AccountReader>();
+        services.AddScoped<INotificationService, NotificationService>();
+
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         services.Scan(scan => scan.FromAssembliesOf(typeof(ApplicationAssembly))

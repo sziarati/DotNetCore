@@ -1,4 +1,3 @@
-using Core.Features.Accounts.Commands;
 using Core.Features.Users.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

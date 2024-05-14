@@ -29,7 +29,7 @@ namespace Infra.Accounts.Repository
         }
         public Account GetAccount(Guid accountGuid)
         {
-            var account = _context.Accounts.Find(accountGuid);
+            var account = _context.Accounts.FirstOrDefault(x => x.AccountGuid == accountGuid);
             return account ?? new Account();
         }
     }
