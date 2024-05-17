@@ -1,34 +1,15 @@
-using Core.Dtos;
-using Core.Features.Accounts.Commands;
+﻿using Core.Features.Accounts.Commands;
 using Core.Features.Accounts.Interfaces;
-using Core.Features.Accounts.Queries;
 using Core.Features.Notification;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Dtos;
 
-namespace WebApi.Controllers
+public class WithDraw : IEndpoint
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class AccountController(IMediator mediator, INotificationService notificationService, IAccountReader accountReader) : ControllerBase
+    public void MapEndPoint(IEndpointRouteBuilder builder)
     {
-        [HttpPost("Create")]    
-        public async Task<ActionResult<Guid>> CreateAsync(CreateAccountCommand input)
-        {
-            var addResult = await mediator.Send(input);
-            return addResult != Guid.Empty ? Ok(addResult) : BadRequest("Creation failed.");
-        }
-
-        [HttpDelete("Delete/{accountId}")]
-        public async Task<IActionResult> DeleteAsync(DeleteAccountCommand input)
-        {
-            var deleteResult = await mediator.Send(input);
-            return deleteResult ? Ok() : NotFound("Account not found.");
-        }
-
-        [HttpPost("Withdraw")]
-        public async Task<IActionResult> WithdrawAsync(WithdrawDto input)
+        builder.MapPost("/Withdraw", async ([FromBody] WithdrawDto input, IMediator mediator, IAccountReader accountReader, INotificationService notificationService) =>
         {
             var withdrawCommand = new WithdrawCommand
             {
@@ -58,14 +39,9 @@ namespace WebApi.Controllers
                 await notificationService.SendNotification(notificationClass);
             }
 
-            return moveMoneyResult ? Ok() : BadRequest();
-        }
-
-        [HttpGet("History")]
-        public async Task<ActionResult<List<AccountInfo>>> GetAccountHistoryAsync(GetHistoryQuery input)
-        {
-            var historyResult = await mediator.Send(input);
-            return Ok(historyResult);
-        }
-    }    
+            return moveMoneyResult ? Results.Ok() : Results.BadRequest();
+        })
+        .WithName("WithDraw")
+        .WithTags("Account");
+    }
 }
